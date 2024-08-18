@@ -1,0 +1,22 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "carbontracker-8298d",
+                    "appId": "1:721100045101:android:ddef825fe332e39049b1a4",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "carbontracker-8298d",
+                    "configurations": {
+                        "android": "1:721100045101:android:ddef825fe332e39049b1a4",
+                        "ios": "1:721100045101:ios:3e298f4143c589cf49b1a4"
+                    }
+                }
+            }
+        }
+    }
+}
