@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TestPage extends StatefulWidget {
-  TestPage({super.key});
+  const TestPage({super.key});
 
   @override
   State<TestPage> createState() => _TestPageState();

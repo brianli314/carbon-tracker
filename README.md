@@ -1,3 +1,3 @@
-# tracker_app
+# Carbon footprint app
 
 A new Flutter project.

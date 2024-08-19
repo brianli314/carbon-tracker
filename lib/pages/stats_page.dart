@@ -1,7 +1,6 @@
 import 'package:tracker_app/components/buttons.dart';
 import 'package:tracker_app/pages/test_page.dart';
 import 'package:tracker_app/stats/emission_circle.dart';
-import 'package:tracker_app/services/collections.dart';
 import 'package:tracker_app/services/database_provider.dart';
 import 'package:tracker_app/stats/slideable.dart';
 import 'package:tracker_app/stats/statistic_bar.dart';
@@ -83,7 +82,7 @@ class _StatsPageState extends State<StatsPage> {
                     child: MyButton(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => TestPage()));
+                            builder: (context) => const TestPage()));
                       },
                       text: "Click to finish setup",
                       roundEdges: 20
