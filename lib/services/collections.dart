@@ -78,12 +78,10 @@ class Energy {
   List<num> eMonthRate;
   num gasRate;
   List<num> gasMonthRate;
-  bool setupFinished;
 
   Energy({
     required this.electricRate,
     required this.eMonthRate,
-    required this.setupFinished,
     required this.gasRate,
     required this.gasMonthRate
   });
@@ -95,7 +93,6 @@ class Energy {
         eMonthRate: List<num>.from(doc['electricityMonth']),
         gasRate: doc['gas'],
         gasMonthRate: List<num>.from(doc['gasMonth']),
-        setupFinished: doc['setup']
       );
   }
 
@@ -105,7 +102,6 @@ class Energy {
       eMonthRate: List.filled(12, 0),
       gasRate: 0,
       gasMonthRate: List.filled(12, 0),
-      setupFinished: false,
     );
   }
 
@@ -115,7 +111,6 @@ class Energy {
       'electricityMonth': eMonthRate,
       'gas': gasRate,
       'gasMonth': gasMonthRate,
-      'setup': setupFinished
     };
   }
 }

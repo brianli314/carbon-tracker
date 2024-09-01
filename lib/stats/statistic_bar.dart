@@ -41,44 +41,52 @@ class _StatisticBarState extends State<StatisticBar>{
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: const BorderRadius.all(Radius.circular(30))),
-        child: Padding(
-            padding: const EdgeInsets.all(25),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 25),
-                  child: Transform.scale(
-                    scale: 1.9,
-                    child: widget.icon,
-                  ),
-                ),
-                
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: FittedBox(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: const BorderRadius.all(Radius.circular(30))),
+            child: Padding(
+                padding: const EdgeInsets.all(25),
+                child: Row(
                   children: [
-                    Text(widget.taskName,style: Theme.of(context).textTheme.displaySmall),
-                    Row(
-                      //mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 25),
+                      child: Transform.scale(
+                        scale: 1.9,
+                        child: widget.icon,
+                      ),
+                    ),
+                    
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(widget.value.toString(), style: Theme.of(context).textTheme.displayLarge),
-                        const SizedBox(width: 5),
-                        Padding(
-                          padding: const EdgeInsets.all(3.5),
-                          child: Text(
-                            widget.unit,
-                            style: Theme.of(context).textTheme.displaySmall
-                          ),
-                        )
+                        Text(widget.taskName,style: Theme.of(context).textTheme.displaySmall),
+                        Row(
+                          //mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(widget.value.toString(), style: Theme.of(context).textTheme.displayLarge),
+                            const SizedBox(width: 5),
+                            Padding(
+                              padding: const EdgeInsets.all(3.5),
+                              child: Text(
+                                widget.unit,
+                                style: Theme.of(context).textTheme.displaySmall
+                              ),
+                            )
+                          ],
+                        ),
+                        Text(widget.timeUnit, style: Theme.of(context).textTheme.displaySmall),
                       ],
                     ),
-                    Text(widget.timeUnit, style: Theme.of(context).textTheme.displaySmall),
+                    
                   ],
-                ),
-                
-              ],
-            )),
+                )),
+          ),
+        ),
       ),
     );
   }

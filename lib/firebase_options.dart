@@ -59,10 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDCufilFMJ2BHf9jU00BfSIXVnJdJR40i4',
-    appId: '1:721100045101:ios:164bd4ebb8b099b049b1a4',
+    appId: '1:721100045101:ios:3e298f4143c589cf49b1a4',
     messagingSenderId: '721100045101',
     projectId: 'carbontracker-8298d',
     storageBucket: 'carbontracker-8298d.appspot.com',
-    iosBundleId: 'com.example.trackerApp',
+    iosBundleId: 'com.someperson314.carbontracker',
   );
+
 }

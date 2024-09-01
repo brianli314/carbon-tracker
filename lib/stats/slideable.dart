@@ -41,7 +41,8 @@ class _SlideableState extends State<Slideable> {
           ) : null,
         control: widget.arrows ? SwiperControl(
           color: Theme.of(context).colorScheme.secondaryContainer,
-          disableColor: Theme.of(context).colorScheme.primaryContainer
+          disableColor: Theme.of(context).colorScheme.primaryContainer,
+          padding: const EdgeInsets.all(5)
         ) : null,
         itemBuilder: (context, index) => widget.options[index],
       ),

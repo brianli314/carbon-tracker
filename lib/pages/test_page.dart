@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:tracker_app/components/buttons.dart';
 import 'package:tracker_app/components/drop_down.dart';
 import 'package:tracker_app/components/space_scroll.dart';
@@ -76,14 +78,13 @@ class _TestPageState extends State<TestPage> {
     num currentAvg = useMetric ? gasAverageMeters : gasAverage;
     return Scaffold(
         appBar: AppBar(
-          title: Text("Complete Setup",
+          title: Text("Edit values",
               style: Theme.of(context).textTheme.headlineLarge),
           centerTitle: true,
         ),
         body: SpaceBetweenScrollView(
           padding: const EdgeInsets.all(25),
-          footer: MyButton(text: "Next", onTap: enterDataAndNextPage),
-            
+          footer: MyButton(text: "Complete", onTap: enterDataAndNextPage),
           child: Column(
           children: [
             Center(
@@ -92,7 +93,7 @@ class _TestPageState extends State<TestPage> {
             const SizedBox(height: 40),
             ListTile(
                 leading: SizedBox(
-                    width: MediaQuery.sizeOf(context).width - 210,
+                    width: max(MediaQuery.sizeOf(context).width - 210, 100),
                     child: MyNumberField(
                         hintText: electricAverage.toString(),
                         controller: monthlyElectricController,
@@ -112,36 +113,34 @@ class _TestPageState extends State<TestPage> {
                 leading: MyNumberField(
                     hintText: currentAvg.toString(),
                     controller: monthlyGasController,
-                    width: MediaQuery.sizeOf(context).width - 210,
+                    width: max(MediaQuery.sizeOf(context).width - 210, 100),
                     error: gasInputError,
                     errorMsg: gasMsg,
                   ),
-                trailing: SizedBox(
+                trailing: MyDropDownMenu(
                   width: 82,
-                  child: MyDropDownMenu(
-                    options: [
-                      DropdownMenuEntry(
-                          value: "Cubic ft",
-                          label: "ft³",
-                          labelWidget: Text("Cubic feet",
-                              style: Theme.of(context).textTheme.displaySmall)),
-                      DropdownMenuEntry(
-                          value: "Cubic meters",
-                          label: "m³",
-                          labelWidget: Text("Cubic meters",
-                              style: Theme.of(context).textTheme.displaySmall))
-                    ],
-                    initialSelection: units.unitType.volume,
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == "Cubic ft") {
-                          useMetric = false;
-                        } else {
-                          useMetric = true;
-                        }
-                      });
-                    },
-                  ),
+                  options: [
+                    DropdownMenuEntry(
+                        value: "Cubic ft",
+                        label: "ft³",
+                        labelWidget: Text("Cubic feet",
+                            style: Theme.of(context).textTheme.displaySmall)),
+                    DropdownMenuEntry(
+                        value: "Cubic meters",
+                        label: "m³",
+                        labelWidget: Text("Cubic meters",
+                            style: Theme.of(context).textTheme.displaySmall))
+                  ],
+                  initialSelection: units.unitType.volume,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value == "Cubic ft") {
+                        useMetric = false;
+                      } else {
+                        useMetric = true;
+                      }
+                    });
+                  },
                 ),
               ),
               const SizedBox(height: 30)

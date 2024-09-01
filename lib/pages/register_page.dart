@@ -1,4 +1,5 @@
 import 'package:tracker_app/components/buttons.dart';
+import 'package:tracker_app/components/fitted_text.dart';
 import 'package:tracker_app/components/text_field.dart';
 import 'package:tracker_app/services/firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -101,8 +102,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 size: 80,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              Text(
-                "REGISTER",
+              FittedText(
+                text: "REGISTER",
                 style: Theme.of(context).textTheme.displayLarge,
               ),
               const SizedBox(height: 50),
@@ -138,22 +139,24 @@ class _RegisterPageState extends State<RegisterPage> {
               const SizedBox(height: 25),
               MyButton(text: "Register", onTap: registerUser),
               const SizedBox(height: 25),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Already have an account?",
-                    style: Theme.of(context).textTheme.displaySmall,
-                  ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: widget.onTap,
-                    child: Text(
-                      "Login Here",
-                      style: Theme.of(context).textTheme.labelMedium,
+              FittedBox(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Already have an account?",
+                      style: Theme.of(context).textTheme.displaySmall,
                     ),
-                  )
-                ],
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: widget.onTap,
+                      child: Text(
+                        "Login Here",
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                    )
+                  ],
+                ),
               )
             ]),
           ),

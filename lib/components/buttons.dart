@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracker_app/components/fitted_text.dart';
 
 class MyButton extends StatelessWidget{
   final String text;
@@ -25,8 +26,8 @@ class MyButton extends StatelessWidget{
         ),
         padding: const EdgeInsets.all(10),
         child: Center(
-          child: Text(
-            text, 
+          child: FittedText(
+            text: text, 
             style: Theme.of(context).textTheme.displayMedium
           ),
         ),

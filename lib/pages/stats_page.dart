@@ -1,4 +1,5 @@
 import 'package:tracker_app/components/buttons.dart';
+import 'package:tracker_app/components/fitted_text.dart';
 import 'package:tracker_app/pages/test_page.dart';
 import 'package:tracker_app/stats/emission_circle.dart';
 import 'package:tracker_app/services/database_provider.dart';
@@ -22,9 +23,6 @@ class _StatsPageState extends State<StatsPage> {
   late final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
 
-
-  
-  String? locale;
   bool _isLoading = true;
 
   @override
@@ -53,31 +51,31 @@ class _StatsPageState extends State<StatsPage> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text("M Y   S T A T S",
+          title: FittedText(text: "M Y   S T A T S",
               style: Theme.of(context).textTheme.headlineLarge),
           centerTitle: true),
       body: _isLoading
           ? loading
-          : ListView(padding: const EdgeInsets.all(15), children: [
+          : ListView(padding: const EdgeInsets.all(0), children: [
               const SizedBox(height: 25),
-              Slideable(
-                options: EmissionCircleUtils.fromList(
-                    [
-                      listeningProvider.carbon
-                          .computeEmissionsForDays(listeningProvider.miles, listeningProvider.energy, 7),
-                      listeningProvider.carbon
-                          .computeEmissionsForDays(listeningProvider.miles, listeningProvider.energy, 31),
-                      listeningProvider.carbon
-                          .computeEmissionsForDays(listeningProvider.miles, listeningProvider.energy, 365),
-                    ],
-                    listeningProvider.carbon.goal,
-                    ["This week", "This month", "This year"]),
-                height: 490,
-                arrows: true,
+              Center(
+                child: Slideable(
+                  options: EmissionCircleUtils.fromList(
+                      [
+                        listeningProvider.carbon
+                            .computeEmissionsForDays(listeningProvider.miles, listeningProvider.energy, 7),
+                        listeningProvider.carbon
+                            .computeEmissionsForDays(listeningProvider.miles, listeningProvider.energy, 31),
+                        listeningProvider.carbon
+                            .computeEmissionsForDays(listeningProvider.miles, listeningProvider.energy, 365),
+                      ],
+                      listeningProvider.carbon.goal,
+                      ["This week", "This month", "This year"]),
+                  height: 490,
+                  arrows: true,
+                ),
               ),
-               listeningProvider.energy.setupFinished
-                  ? const SizedBox(height: 20)
-                  : Padding(
+               Padding(
                     padding: const EdgeInsets.all(10),
                     child: MyButton(
                       onTap: () {

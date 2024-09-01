@@ -1,4 +1,5 @@
 import 'package:tracker_app/components/buttons.dart';
+import 'package:tracker_app/components/fitted_text.dart';
 import 'package:tracker_app/components/text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -94,8 +95,8 @@ class _LoginPageState extends State<LoginPage> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 Center(
-                  child: Text(
-                    "SIGN IN",
+                  child: FittedText(
+                    text: "SIGN IN",
                     style: Theme.of(context).textTheme.displayLarge,
                   ),
                 ),
@@ -118,32 +119,35 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: Text(
-                      "Forgot password?",
+                  child: FittedText(
+                      text: "Forgot password?",
                       style: Theme.of(context).textTheme.displaySmall,
                     )
                 ),
                 const SizedBox(height: 25),
                 MyButton(text: "Login", onTap: login),
                 const SizedBox(height: 25),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account?",
-                      style: Theme.of(context).textTheme.displaySmall,
-                    ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: widget.onTap,
-                      child: Text(
-                        "Register Here",
-                        style: Theme.of(context).textTheme.labelMedium,
+                FittedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FittedText(
+                        text: "Don't have an account?",
+                        style: Theme.of(context).textTheme.displaySmall,
                       ),
-                    )
-                  ],
+                      const SizedBox(width: 10),
+                      FittedBox(
+                        child: GestureDetector(
+                          onTap: widget.onTap,
+                          child: FittedText(
+                            text: "Register Here",
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 )
-            
               ]
             ),
           ),

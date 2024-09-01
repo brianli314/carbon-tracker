@@ -47,73 +47,74 @@ class _EmissionCircleState extends State<EmissionCircle> {
       }
       default: throw ArgumentError("Invalid progress input");
     }
-    return Column(
-      children: [
-        Center(child: Text("Carbon score", style: Theme.of(context).textTheme.displayLarge)),
-        const SizedBox(height: 50),        
-        Stack(
-          alignment: AlignmentDirectional.center,
-          children: [
-            CircularPercentIndicator(
-              radius: radius,
-              startAngle: progressEndAngle,
-              lineWidth: lineWidth,
-              animation: true,
-              circularStrokeCap: CircularStrokeCap.round,
-              percent: (1 - percent) * multiplier,
-              backgroundColor: Colors.transparent,
-              progressColor: background,
-            ),
-            CircularPercentIndicator(
-              radius: radius,
-              startAngle: progressEndAngle,
-              lineWidth: lineWidth,
-              circularStrokeCap: CircularStrokeCap.round,
-              percent: 0.009,
-              backgroundColor: Colors.transparent,
-              progressColor: Theme.of(context).colorScheme.surface,
-            ),
-            CircularPercentIndicator(
-              radius: radius,
-              startAngle: startAngle,
-              lineWidth: lineWidth,
-              animation: true,
-              percent: percent * multiplier,
-              circularStrokeCap: CircularStrokeCap.round,
-              backgroundColor: Colors.transparent,
-              progressColor: progress,
-            ),
-            FaIcon(
-              FontAwesomeIcons.seedling,
-              size: 70,
-              color: progress,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const EmissionPage()));
-                },
-                style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    padding: const EdgeInsets.all(15),
-                    elevation: 0,
-                    fixedSize: const Size.fromRadius(150),
-                    backgroundColor: Colors.transparent,
-                    foregroundColor:
-                        Theme.of(context).colorScheme.inversePrimary),
-                child: const SizedBox()),
-            
-            
-          ],
-        ),
-        Text(
-          widget.emissionNum.toString(),
-          style: Theme.of(context).textTheme.displayLarge,
-        ),
-        const SizedBox(height:10),
-        Text(widget.timeUnit, style: Theme.of(context).textTheme.displayMedium),
-        const SizedBox(height:15),
-      ],
+    return FittedBox(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("Carbon score", style: Theme.of(context).textTheme.displayLarge),
+          const SizedBox(height: 50),        
+          Stack(
+            alignment: AlignmentDirectional.center,
+            children: [
+              CircularPercentIndicator(
+                radius: radius,
+                startAngle: progressEndAngle,
+                lineWidth: lineWidth,
+                animation: true,
+                circularStrokeCap: CircularStrokeCap.round,
+                percent: (1 - percent) * multiplier,
+                backgroundColor: Colors.transparent,
+                progressColor: background,
+              ),
+              CircularPercentIndicator(
+                radius: radius,
+                startAngle: progressEndAngle,
+                lineWidth: lineWidth,
+                circularStrokeCap: CircularStrokeCap.round,
+                percent: 0.009,
+                backgroundColor: Colors.transparent,
+                progressColor: Theme.of(context).colorScheme.surface,
+              ),
+              CircularPercentIndicator(
+                radius: radius,
+                startAngle: startAngle,
+                lineWidth: lineWidth,
+                animation: true,
+                percent: percent * multiplier,
+                circularStrokeCap: CircularStrokeCap.round,
+                backgroundColor: Colors.transparent,
+                progressColor: progress,
+              ),
+              FaIcon(
+                FontAwesomeIcons.seedling,
+                size: 70,
+                color: progress,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const EmissionPage()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(15),
+                      elevation: 0,
+                      fixedSize: const Size.fromRadius(150),
+                      backgroundColor: Colors.transparent,
+                      foregroundColor:
+                          Theme.of(context).colorScheme.inversePrimary),
+                  child: const SizedBox()),
+            ],
+          ),
+          Text(
+            widget.emissionNum.toString(),
+            style: Theme.of(context).textTheme.displayLarge,
+          ),
+          const SizedBox(height:10),
+          Text(widget.timeUnit, style: Theme.of(context).textTheme.displayMedium),
+          const SizedBox(height:15),
+        ],
+      ),
     );
   }
 }
