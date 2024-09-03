@@ -6,6 +6,8 @@ class FirestoreDatabase {
   final _db = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
 
+  get db => _db;
+  
   Future<void> createUserDocument(String email, String name) async {
     String uid = _auth.currentUser!.uid;
     final db = FirebaseFirestore.instance;
@@ -18,6 +20,7 @@ class FirestoreDatabase {
     await db.collection("Mileage").doc(uid).set(Miles.defaultInputs().toMap());
     await db.collection("Energy").doc(uid).set(Energy.defaultInputs().toMap());
     await db.collection("Carbon").doc(uid).set(Carbon.defaultInputs().toMap());
+    await db.collection("Setup").doc(uid).set({"setupFinished": false});
   }
 
   Future<T?> getUserData<T>(String uid, String collection,
@@ -43,6 +46,10 @@ class FirestoreDatabase {
     return getUserData(uid, "Carbon", (doc) => Carbon.fromDocument(doc));
   }
 
+  Future<bool?> getSetup(String uid){
+    return getUserData(uid, "Setup", (doc) => doc['setupFinished']);
+  }
+
   Future<void> updateValue(String collection, String uid, Map<String, dynamic> data) async {
     try{
       await _db.collection(collection).doc(uid).set(data);
@@ -50,5 +57,13 @@ class FirestoreDatabase {
       print(e);
       return;
     }
+  }
+
+  Future<void> deleteUserInfo(String uid) async {
+    db.collection("Mileage").doc(uid).delete();
+    db.collection("Energy").doc(uid).delete();
+    db.collection("Carbon").doc(uid).delete();
+    db.collection("Setup").doc(uid).delete();
+    db.collection("Users").doc(uid).delete();
   }
 }

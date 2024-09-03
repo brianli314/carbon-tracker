@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:provider/provider.dart';
+import 'package:tracker_app/units.dart';
 
 class Miles {
-  List<num> data;
+  List<double> data;
   List<Timestamp> time;
   List<String> type;
 
@@ -10,59 +13,96 @@ class Miles {
     required this.time,
     required this.type,
   });
-  
 
   factory Miles.fromDocument(DocumentSnapshot doc) {
     return Miles(
         time: List<Timestamp>.from(doc['time']),
-        data: List<num>.from(doc['data']),
+        data: List<double>.from(doc['data']),
         type: List<String>.from(doc['type']));
   }
 
-  factory Miles.defaultInputs(){
-    return Miles(
-      data: [],
-      time: [],
-      type: []
-    );
+  factory Miles.defaultInputs() {
+    return Miles(data: [], time: [], type: []);
   }
 
   Map<String, dynamic> toMap() {
     return {'data': data, 'time': time, 'type': type};
   }
 
-  num getCarMilesForDays(int days) {
+  Map<String, double> getDistr(int days) {
     DateTime now = DateTime.now();
-    num counter = 0;
+    Map<String, double> output = {
+      "Car": 0,
+      "Bike": 0,
+      "Walk": 0,
+      "Metro": 0,
+      "Plane": 0
+    };
     for (int i = 0; i < data.length; i++) {
       DateTime date = time[i].toDate();
-      num value = data[i];
+      double value = data[i];
       int difference = now.difference(date).inDays;
-      if (difference < 7 && type[i] == "Car") {
-        counter += value;
+      if (difference < days) {
+        output.update(type[i], (curr) => curr + value);
       }
     }
-    return counter;
+    return output;
   }
 
-  List<num> getAllCarStats() {
+  Map<String, double> getWeeklyDistr() {
+    return getDistr(7);
+  }
+
+  Map<String, double> getYearlyDistr() {
+    return getDistr(365);
+  }
+
+  List<double> getWeekly() {
+    DateTime now = DateTime.now();
+    List<double> output = List.filled(7, 0);
+    for (int i = 0; i < data.length; i++) {
+      DateTime date = time[i].toDate();
+      double value = data[i];
+      int difference = now.difference(date).inDays;
+      if (difference < 7 && type[i] == "Car") {
+        output[date.weekday - 1] += value;
+      }
+    }
+    return output;
+  }
+
+  List<double> getYearly() {
+    Jiffy now = Jiffy.now();
+    List<double> output = List.filled(12, 0);
+    for (int i = 0; i < data.length; i++) {
+      DateTime date = time[i].toDate();
+      double value = data[i];
+      int difference = now.diff(Jiffy.parseFromDateTime(date), unit: Unit.month).toInt();
+      if (difference < 12 && type[i] == "Car") {
+        output[date.month - 1] += value;
+      }
+    }
+    return output;
+  }
+
+  List<double> getAllCarStats() {
     DateTime now = DateTime.now();
 
     if (data.length != time.length) {
       throw ArgumentError("Lists must be same size");
     }
 
-    num weekSum = 0;
-    num monthSum = 0;
-    num yearSum = 0;
+    double weekSum = 0;
+    double monthSum = 0;
+    double yearSum = 0;
     for (int i = 0; i < data.length; i++) {
       DateTime date = time[i].toDate();
-      num value = data[i];
+      double value = data[i];
       int difference = now.difference(date).inDays;
       if (difference < 7 && type[i] == "Car") {
         weekSum += value;
       }
-      if (difference < 31) {
+      if (Jiffy.now().diff(Jiffy.parseFromDateTime(date), unit: Unit.month) < 1) {
         monthSum += value;
       }
       if (difference < 365) {
@@ -74,50 +114,39 @@ class Miles {
 }
 
 class Energy {
-  num electricRate;
-  List<num> eMonthRate;
-  num gasRate;
-  List<num> gasMonthRate;
+  List<double> eMonthRate;
+  List<double> gasMonthRate;
 
-  Energy({
-    required this.electricRate,
-    required this.eMonthRate,
-    required this.gasRate,
-    required this.gasMonthRate
-  });
-
+  Energy(
+      {required this.eMonthRate,
+      required this.gasMonthRate,
+    });
 
   factory Energy.fromDocument(DocumentSnapshot doc) {
     return Energy(
-        electricRate: doc['electricity'], 
-        eMonthRate: List<num>.from(doc['electricityMonth']),
-        gasRate: doc['gas'],
-        gasMonthRate: List<num>.from(doc['gasMonth']),
-      );
+      eMonthRate: List<double>.from(doc['electricityMonth']),
+      gasMonthRate: List<double>.from(doc['gasMonth']),
+    );
   }
 
-  factory Energy.defaultInputs(){
+  factory Energy.defaultInputs() {
     return Energy(
-      electricRate: 0,
-      eMonthRate: List.filled(12, 0),
-      gasRate: 0,
-      gasMonthRate: List.filled(12, 0),
+      eMonthRate: List<double>.filled(12, 900, growable: false),
+      gasMonthRate: List<double>.filled(12, 5.55, growable: false),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'electricity': electricRate, 
       'electricityMonth': eMonthRate,
-      'gas': gasRate,
       'gasMonth': gasMonthRate,
     };
   }
 }
 
 class Carbon {
-  num average;
-  num goal;
+  double average;
+  double goal;
 
   Carbon({
     required this.average,
@@ -128,13 +157,9 @@ class Carbon {
     return Carbon(average: doc['average'], goal: doc['goal']);
   }
 
-  factory Carbon.defaultInputs(){
-    return Carbon(
-      average: 0.8,
-      goal: 1.6
-    );
+  factory Carbon.defaultInputs() {
+    return Carbon(average: 25, goal: 50);
   }
-
 
   Map<String, dynamic> toMap() {
     return {
@@ -143,7 +168,7 @@ class Carbon {
     };
   }
 
-  num computeEmissionsForDays(Miles mileage, Energy energy, int days) {
-    return average;
+  static double computeEmissionsForDays(Miles mileage, Energy energy, int days) {
+    return 0.8;
   }
 }

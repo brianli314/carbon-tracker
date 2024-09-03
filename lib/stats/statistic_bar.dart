@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class StatisticBar extends StatefulWidget {
   final String taskName;
-  num value;
+  double value;
   final String timeUnit;
   final String unit;
   Icon? icon;
@@ -95,7 +95,7 @@ class _StatisticBarState extends State<StatisticBar>{
 }
 
 class StatsUtils{
-  static List<StatisticBar> fromList(String name, List<String> timeUnits, List<num> values, String unit, Icon? icon){
+  static List<StatisticBar> fromList(String name, List<String> timeUnits, List<double> values, String unit, Icon? icon){
     List<StatisticBar> output = [];
     for (int i = 0; i < values.length; i++){
       output.add(

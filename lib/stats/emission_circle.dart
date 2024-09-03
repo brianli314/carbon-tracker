@@ -6,8 +6,8 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 class EmissionCircle extends StatefulWidget {
-  num emissionNum;
-  num goal;
+  double emissionNum;
+  double goal;
   String timeUnit;
   EmissionCircle({
     super.key,
@@ -90,20 +90,6 @@ class _EmissionCircleState extends State<EmissionCircle> {
                 size: 70,
                 color: progress,
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const EmissionPage()));
-                  },
-                  style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(15),
-                      elevation: 0,
-                      fixedSize: const Size.fromRadius(150),
-                      backgroundColor: Colors.transparent,
-                      foregroundColor:
-                          Theme.of(context).colorScheme.inversePrimary),
-                  child: const SizedBox()),
             ],
           ),
           Text(
@@ -120,7 +106,7 @@ class _EmissionCircleState extends State<EmissionCircle> {
 }
 
 class EmissionCircleUtils {
-  static List<EmissionCircle> fromList(List<num> values, num goal, List<String> timeUnits){
+  static List<EmissionCircle> fromList(List<double> values, double goal, List<String> timeUnits){
     List<EmissionCircle> output = [];
     for (int i = 0; i < values.length; i++){
       output.add(

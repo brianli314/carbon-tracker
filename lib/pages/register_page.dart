@@ -27,6 +27,11 @@ class _RegisterPageState extends State<RegisterPage> {
   String emailMsg = "";
   bool userError = false;
 
+
+  void dispose(){
+    super.dispose();
+    if (context.mounted) Navigator.pop(context);
+  }
   void registerUser() async {
     //Reset error msgs
     setState(() {

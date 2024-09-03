@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:tracker_app/components/buttons.dart';
-import 'package:tracker_app/components/drop_down.dart';
+import 'package:tracker_app/components/fitted_text.dart';
+import 'package:tracker_app/components/loading_circle.dart';
+import 'package:tracker_app/components/number_question.dart';
 import 'package:tracker_app/components/space_scroll.dart';
 import 'package:tracker_app/components/text_field.dart';
 import 'package:tracker_app/services/database_provider.dart';
@@ -18,133 +20,121 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  late final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
+  late final databaseProvider =
+      Provider.of<DatabaseProvider>(context, listen: false);
+  late final listeningProvider = Provider.of<DatabaseProvider>(context);
+  DateTime today = DateTime.now();
   String uid = FirebaseAuth.instance.currentUser!.uid;
 
-  static const electricAverage = 899;
-  static const gasAverage = 196;
-  static const gasAverageMeters = 5.55;
+  TextEditingController? monthlyElectricController;
+  TextEditingController? monthlyGasController;
+  TextEditingController? goalController;
+  bool _isLoading = true;
 
-  TextEditingController monthlyElectricController = TextEditingController();
-  TextEditingController monthlyGasController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    loadStats();
+  }
+
+  Future<void> loadStats() async {
+    await databaseProvider.loadData(uid);
+    today = DateTime.now();
+    setState(() => _isLoading = false);
+  }
+
+  void loadControllers(bool isMetric, UnitsProvider units) {
+    monthlyElectricController = TextEditingController(
+        text: listeningProvider.energy.eMonthRate[today.month - 1].toString());
+    monthlyGasController = TextEditingController(
+        text: units
+            .convertFromMetric(units.unitType.volume,
+                listeningProvider.energy.gasMonthRate[today.month - 1])
+            .toString());
+    goalController =
+        TextEditingController(text: listeningProvider.carbon.goal.toString());
+  }
 
   bool electricInputError = false;
-  String electricMsg = "";
   bool gasInputError = false;
-  String gasMsg = "";
-
-  bool useMetric = false;
+  bool goalInputError = false;
 
   void enterDataAndNextPage() async {
-    int? electric;
-    int? gas;
+    double? electric = double.tryParse(monthlyElectricController!.text);
+    double? gas = double.tryParse(monthlyGasController!.text);
+    double? goal = double.tryParse(goalController!.text);
+    final units = Provider.of<UnitsProvider>(context, listen: false);
 
-    if (monthlyElectricController.text.isEmpty){
-      electric = electricAverage;
-    } else {
-      electric = int.tryParse(monthlyElectricController.text);
-    }
-    
-    if(monthlyGasController.text.isEmpty){
-      gas = gasAverage;
-    } else {
-      gas = int.tryParse(monthlyGasController.text);
-    }
-    
-    if (electric == null){
+    setState(() {
+      electricInputError = false;
+      gasInputError = false;
+      goalInputError = false;
+    });
+
+    if (electric == null || electric < 0) {
       setState(() {
         electricInputError = true;
-        electricMsg = "Invalid input";
       });
-    } else if (gas == null){
+    } else if (gas == null || gas < 0) {
       setState(() {
         gasInputError = true;
-        gasMsg = "Invalid input";
+      });
+    } else if (goal == null || goal < 0) {
+      setState(() {
+        goalInputError = true;
       });
     } else {
       showDialog(
-        context: context, 
-        builder: (context) => const Center(child: CircularProgressIndicator())
-      );
+          context: context,
+          builder: (context) =>
+              const Center(child: CircularProgressIndicator()));
       await databaseProvider.updateEnergyRate(uid, electric);
+      await databaseProvider.updateGasRate(
+          uid, units.convertToMetric(units.unitType.volume, gas));
+      Navigator.pop(context);
       Navigator.pop(context);
     }
-    
   }
 
   @override
   Widget build(BuildContext context) {
     UnitsProvider units = Provider.of<UnitsProvider>(context, listen: false);
-    num currentAvg = useMetric ? gasAverageMeters : gasAverage;
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Edit values",
-              style: Theme.of(context).textTheme.headlineLarge),
-          centerTitle: true,
-        ),
-        body: SpaceBetweenScrollView(
-          padding: const EdgeInsets.all(25),
-          footer: MyButton(text: "Complete", onTap: enterDataAndNextPage),
-          child: Column(
-          children: [
-            Center(
-                child: Text("Average monthly electricity use",
-                    style: Theme.of(context).textTheme.headlineMedium)),
-            const SizedBox(height: 40),
-            ListTile(
-                leading: SizedBox(
-                    width: max(MediaQuery.sizeOf(context).width - 210, 100),
-                    child: MyNumberField(
-                        hintText: electricAverage.toString(),
-                        controller: monthlyElectricController,
-                        error: electricInputError,
-                        errorMsg: electricMsg,
-                      )),
-                trailing: const Padding(
-                  padding: EdgeInsets.only(right: 25),
-                  child: Text("kWh"),
-                )),
-            const SizedBox(height: 30),
-            Center(
-                child: Text("Average monthly natural gas use",
-                    style: Theme.of(context).textTheme.headlineMedium)),
-            const SizedBox(height: 20),
-            ListTile(
-                leading: MyNumberField(
-                    hintText: currentAvg.toString(),
-                    controller: monthlyGasController,
-                    width: max(MediaQuery.sizeOf(context).width - 210, 100),
-                    error: gasInputError,
-                    errorMsg: gasMsg,
-                  ),
-                trailing: MyDropDownMenu(
-                  width: 82,
-                  options: [
-                    DropdownMenuEntry(
-                        value: "Cubic ft",
-                        label: "ft³",
-                        labelWidget: Text("Cubic feet",
-                            style: Theme.of(context).textTheme.displaySmall)),
-                    DropdownMenuEntry(
-                        value: "Cubic meters",
-                        label: "m³",
-                        labelWidget: Text("Cubic meters",
-                            style: Theme.of(context).textTheme.displaySmall))
-                  ],
-                  initialSelection: units.unitType.volume,
-                  onChanged: (value) {
-                    setState(() {
-                      if (value == "Cubic ft") {
-                        useMetric = false;
-                      } else {
-                        useMetric = true;
-                      }
-                    });
-                  },
+    loadControllers(units.isMetric, units);
+    return _isLoading
+        ? const LoadingCircle()
+        : Scaffold(
+            appBar: AppBar(
+              title: FittedText(
+                  text: "Edit values",
+                  style: Theme.of(context).textTheme.headlineLarge),
+              centerTitle: true,
+            ),
+            body: SpaceBetweenScrollView(
+              padding: const EdgeInsets.all(15),
+              footer: MyButton(text: "Complete", onTap: enterDataAndNextPage),
+              child: Column(children: [
+                NumberQuestion(
+                  controller: monthlyElectricController!,
+                  title: "Electricity use this month",
+                  trailing: "kWh",
+                  error: electricInputError,
                 ),
-              ),
-              const SizedBox(height: 30)
-          ]),
-        ));
+                const SizedBox(height: 30),
+                NumberQuestion(
+                  controller: monthlyGasController!,
+                  title: "Natural gas use this month",
+                  trailing: units.unitType.volume,
+                  error: gasInputError,
+                ),
+                const SizedBox(height: 30),
+                NumberQuestion(
+                  controller: goalController!,
+                  title: "Goal: Reduce emissions by",
+                  trailing: "%",
+                  error: goalInputError,
+                ),
+                const SizedBox(height: 30)
+              ]),
+            ));
   }
 }

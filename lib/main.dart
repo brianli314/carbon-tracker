@@ -1,5 +1,8 @@
+import 'package:location/location.dart';
 import 'package:tracker_app/auth/auth.dart';
 import 'package:tracker_app/firebase_options.dart';
+import 'package:tracker_app/pages/emission_page.dart';
+import 'package:tracker_app/pages/test_page.dart';
 import 'package:tracker_app/services/database_provider.dart';
 import 'package:tracker_app/units.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,15 +27,63 @@ void main() async {
     );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  DateTime lastUpdated = DateTime.now();
+  final locationController = Location();
+  LocationData? lastLocation;
+
+  @override
+  void initState(){
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async => await fetchLocationUpdates());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print(MediaQuery.sizeOf(context).width);
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: const AuthPage(),
+        initialRoute: '/',
+        routes:{
+          '/': (context) => const AuthPage(),
+          '/emissions': (context) => const EmissionPage(),
+          '/test': (context) => const TestPage()
+        },
         theme: Provider.of<ThemeProvider>(context).themeData,
       );
+  }
+
+  Future<void> fetchLocationUpdates() async {
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+    serviceEnabled = await locationController.serviceEnabled();
+
+    if (serviceEnabled){
+      serviceEnabled = await locationController.requestService();
+    } else {
+      return;
+    }
+
+    permissionGranted = await locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied){
+      permissionGranted = await locationController.requestPermission();
+      if (permissionGranted != PermissionStatus.granted){
+        return;
+      }
+    }
+
+    locationController.onLocationChanged.listen((location){
+      if (location.latitude != null && location.longitude != null){
+        print(location);
+      }
+    });
   }
 }

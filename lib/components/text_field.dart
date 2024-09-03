@@ -2,21 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class MyTextField extends StatefulWidget{
-  final String hintText;
+  final String? hintText;
   final bool hideText;
   final TextEditingController controller;
   final bool error;
   final String? errorMsg;
+  final double? height;
+  final double? width;
 
   
 
   const MyTextField({
     super.key,
-    required this.hintText,
+    this.hintText,
     required this.hideText,
     required this.controller,
     this.error = false,
     this.errorMsg,
+    this.height,
+    this.width
   });
 
   @override
@@ -26,25 +30,30 @@ class MyTextField extends StatefulWidget{
 class _MyTextFieldState extends State<MyTextField> {
   @override
   Widget build(BuildContext context) {
-      return TextField(
-        controller: widget.controller,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderSide: const BorderSide(width: 1.5),
-            borderRadius: BorderRadius.circular(12),
+      return Container(
+        height: widget.height,
+        width: widget.width,
+        padding: const EdgeInsets.all(0),
+        child: TextField(
+          controller: widget.controller,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderSide: const BorderSide(width: 1.5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            hintText: widget.hintText,
+            hintStyle: Theme.of(context).textTheme.labelSmall,
+            errorText: widget.error ? widget.errorMsg : null
           ),
-          hintText: widget.hintText,
-          hintStyle: Theme.of(context).textTheme.labelSmall,
-          errorText: widget.error ? widget.errorMsg : null
+          obscureText: widget.hideText,
+          
         ),
-        obscureText: widget.hideText,
-        
       );
     }
 }
 
 class MyNumberField extends StatefulWidget{
-  final String hintText;
+  final String? hintText;
   final TextEditingController controller;
   final bool error;
   final String? errorMsg;
@@ -52,7 +61,7 @@ class MyNumberField extends StatefulWidget{
   final double? height;
   const MyNumberField({
     super.key,
-    required this.hintText,
+    this.hintText,
     required this.controller,
     this.error = false,
     this.errorMsg,
@@ -74,7 +83,6 @@ class _MyNumberFieldState extends State<MyNumberField> {
       child: TextField(
           controller: widget.controller,
           keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderSide: const BorderSide(width: 1.5),

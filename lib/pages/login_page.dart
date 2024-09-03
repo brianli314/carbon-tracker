@@ -3,6 +3,7 @@ import 'package:tracker_app/components/fitted_text.dart';
 import 'package:tracker_app/components/text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tracker_app/pages/forgot_password.dart';
 
 class LoginPage extends StatefulWidget{
   final void Function()? onTap;
@@ -25,6 +26,13 @@ class _LoginPageState extends State<LoginPage> {
   bool emailError = false;
   String emailMsg = "";
 
+  @override
+  void dispose(){
+    super.dispose();
+    if (context.mounted){
+      Navigator.pop(context);
+    }
+  }
   void login() async {
     //Reset error msgs
     setState(() {
@@ -49,9 +57,7 @@ class _LoginPageState extends State<LoginPage> {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text, 
           password: passwordController.text);
-
-        if (context.mounted) Navigator.pop(context);
-        
+        if (mounted) Navigator.pop(context);
       } on FirebaseAuthException catch(e){
         if (e.code == "invalid-credential" || e.code == "INVALID_LOGIN_CREDENTIALS"){
           setErrorMsg(email: true, emailMsg: "Invalid credentials");
@@ -119,10 +125,16 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: FittedText(
-                      text: "Forgot password?",
-                      style: Theme.of(context).textTheme.displaySmall,
-                    )
+                  child: GestureDetector(
+                    onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const ForgotPassword()));
+                  },
+                    child: FittedText(
+                        text: "Forgot password?",
+                        style: Theme.of(context).textTheme.displaySmall,
+                      ),
+                  )
                 ),
                 const SizedBox(height: 25),
                 MyButton(text: "Login", onTap: login),
