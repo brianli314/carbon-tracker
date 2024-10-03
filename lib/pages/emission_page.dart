@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
@@ -84,7 +83,7 @@ class _EmissionPageState extends State<EmissionPage>
                 padding: const EdgeInsets.all(20),
                 children: [
                   TitledBarGraph(
-                      title: "Miles driven",
+                      title: "Distance driven by car",
                       values: reorderIndices(
                           weeks,
                           listeningProvider.miles
@@ -111,7 +110,7 @@ class _EmissionPageState extends State<EmissionPage>
                           .map((value) => units.convertFromMetric(
                               units.unitType.length, value))
                           .toList(),
-                      labels: const ["Car", "Bike", "Walk", "Metro", "Plane"]),
+                      labels: const ["Car", "Bike", "Walk", "Plane"]),
                   const SizedBox(
                     height: 40,
                   ),
@@ -131,7 +130,7 @@ class _EmissionPageState extends State<EmissionPage>
                 padding: const EdgeInsets.all(20),
                 children: [
                   TitledBarGraph(
-                      title: "Miles driven",
+                      title: "Distance driven by car",
                       height: 200,
                       values: reorderIndices(
                           months,
@@ -153,7 +152,7 @@ class _EmissionPageState extends State<EmissionPage>
                           .map((value) => units.convertFromMetric(
                               units.unitType.length, value))
                           .toList(),
-                      labels: const ["Car", "Bike", "Walk", "Metro", "Plane"]),
+                      labels: const ["Car", "Bike", "Walk", "Plane"]),
                   const SizedBox(
                     height: 20,
                   ),

@@ -1,6 +1,7 @@
+import 'package:tracker_app/components/buttons.dart';
 import 'package:tracker_app/components/fitted_text.dart';
 import 'package:tracker_app/components/loading_circle.dart';
-import 'package:tracker_app/services/collections.dart';
+import 'package:tracker_app/pages/setup_page.dart';
 import 'package:tracker_app/stats/emission_circle.dart';
 import 'package:tracker_app/services/database_provider.dart';
 import 'package:tracker_app/stats/slideable.dart';
@@ -54,29 +55,34 @@ class _StatsPageState extends State<StatsPage> {
               Center(
                 child: Slideable(
                   options: EmissionCircleUtils.fromList(
-                      [
-                        Carbon.computeEmissionsForDays(
-                            listeningProvider.miles,
-                            listeningProvider.energy,
-                            7),
-                        Carbon.computeEmissionsForDays(
-                            listeningProvider.miles,
-                            listeningProvider.energy,
-                            31),
-                        Carbon.computeEmissionsForDays(
-                            listeningProvider.miles,
-                            listeningProvider.energy,
-                            365),
-                      ],
-                      listeningProvider.carbon.goal,
+                      
+                      getEmissions()
+                        .map((emissions) => listeningProvider.carbon.computeEmissionPercent(emissions, context))
+                        .toList(),
+                      getEmissions(),
+                      100,
                       ["Past week", "Past month", "Past year"]),
                   height: 490,
                   arrows: true,
                 ),
               ),
+              listeningProvider.setupFinished
+                  ? const SizedBox()
+                  : Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: MyButton(
+                        text: "Complete Setup",
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SetupPage()));
+                        },
+                      ),
+                    ),
               Slideable(
                 options: StatsUtils.fromList(
-                    "Distance driven",
+                    "Distance driven by car",
                     ["Past Week", "Past Month", "Past Year"],
                     listeningProvider.miles
                         .getAllCarStats()
@@ -109,5 +115,16 @@ class _StatsPageState extends State<StatsPage> {
                       color: Theme.of(context).colorScheme.inverseSurface))
             ]),
           );
+  }
+
+  List<double> getEmissions() {
+    return [
+      listeningProvider.carbon.computeEmissionsForDays(
+          listeningProvider.miles, listeningProvider.energy, 7, context),
+      listeningProvider.carbon.computeEmissionsForDays(
+          listeningProvider.miles, listeningProvider.energy, 31, context),
+      listeningProvider.carbon.computeEmissionsForDays(
+          listeningProvider.miles, listeningProvider.energy, 365, context),
+    ];
   }
 }

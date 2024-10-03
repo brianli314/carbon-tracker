@@ -1,19 +1,21 @@
 import 'package:tracker_app/themes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:tracker_app/pages/emission_page.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:tracker_app/units.dart';
 
 class EmissionCircle extends StatefulWidget {
   double emissionNum;
   double goal;
   String timeUnit;
+  double actualNum;
   EmissionCircle({
     super.key,
     required this.emissionNum,
     required this.timeUnit,
     required this.goal,
+    required this.actualNum
   });
 
   @override
@@ -32,6 +34,7 @@ class _EmissionCircleState extends State<EmissionCircle> {
     double progressEndAngle = startAngle + percent * (360 - (2 * (startAngle - 180)));
     Color progress;
     Color background;
+    final units = Provider.of<UnitsProvider>(context, listen: false);
     switch (percent) {
       case <= 0.33: {
         progress = provider.rangeColors.colorScheme.primary;
@@ -52,6 +55,8 @@ class _EmissionCircleState extends State<EmissionCircle> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text("Carbon score", style: Theme.of(context).textTheme.displayLarge),
+          const SizedBox(height: 10), 
+          Text(widget.timeUnit, style: Theme.of(context).textTheme.displayLarge),
           const SizedBox(height: 50),        
           Stack(
             alignment: AlignmentDirectional.center,
@@ -93,12 +98,24 @@ class _EmissionCircleState extends State<EmissionCircle> {
             ],
           ),
           Text(
-            widget.emissionNum.toString(),
+            "${widget.actualNum}",
             style: Theme.of(context).textTheme.displayLarge,
           ),
-          const SizedBox(height:10),
-          Text(widget.timeUnit, style: Theme.of(context).textTheme.displayMedium),
+          const SizedBox(height: 10,), 
+          Text( "${units.unitType.weight} CO2/hr",
+          style: Theme.of(context).textTheme.displayMedium,),
+          const SizedBox(height: 20,),
+          Text(
+            "${units.roundDouble(widget.goal - widget.emissionNum, 2)} %",
+            style: Theme.of(context).textTheme.displayLarge,
+          ),
+          Text(
+            "of emissions left to reduce", 
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
           const SizedBox(height:15),
+          
+          //const SizedBox(height:15),
         ],
       ),
     );
@@ -106,11 +123,11 @@ class _EmissionCircleState extends State<EmissionCircle> {
 }
 
 class EmissionCircleUtils {
-  static List<EmissionCircle> fromList(List<double> values, double goal, List<String> timeUnits){
+  static List<EmissionCircle> fromList(List<double> values, List<double> actualValues, double goal, List<String> timeUnits){
     List<EmissionCircle> output = [];
     for (int i = 0; i < values.length; i++){
       output.add(
-        EmissionCircle(emissionNum: values[i], timeUnit: timeUnits[i], goal: goal)
+        EmissionCircle(emissionNum: values[i], actualNum: actualValues[i], timeUnit: timeUnits[i], goal: goal)
       );
     }
     return output;

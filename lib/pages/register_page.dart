@@ -28,6 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool userError = false;
 
 
+  @override
   void dispose(){
     super.dispose();
     if (context.mounted) Navigator.pop(context);

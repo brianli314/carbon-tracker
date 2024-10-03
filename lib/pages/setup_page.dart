@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tracker_app/components/buttons.dart';
+import 'package:tracker_app/components/drop_down.dart';
 import 'package:tracker_app/components/fitted_text.dart';
 import 'package:tracker_app/components/loading_circle.dart';
 import 'package:tracker_app/components/number_question.dart';
 import 'package:tracker_app/components/space_scroll.dart';
-import 'package:tracker_app/services/collections.dart';
 import 'package:tracker_app/services/database_provider.dart';
 import 'package:tracker_app/units.dart';
 
@@ -22,7 +22,8 @@ class _SetupPageState extends State<SetupPage> {
   final double defaultGas = 5.55;
   final double defaultGoal = 50;
   final double defaultMileage = 1931;
-  final double defaultEmissions = 646.68;
+  final double defaultEmissions = 766.43;
+  String carType = "Gas";
 
   late final databaseProvider =
       Provider.of<DatabaseProvider>(context, listen: false);
@@ -73,7 +74,7 @@ class _SetupPageState extends State<SetupPage> {
   }
 
   void loadSetup() async {
-    await databaseProvider.loadSetup(uid);
+    await databaseProvider.loadData(uid);
   }
 
   void finishSetup() async {
@@ -83,7 +84,7 @@ class _SetupPageState extends State<SetupPage> {
       goalInputError = false;
     });
 
-    if (goal == null || goal < 0) {
+    if (goal == null || goal < 0 || goal > 100) {
       setState(() {
         goalInputError = true;
       });
@@ -95,6 +96,7 @@ class _SetupPageState extends State<SetupPage> {
       await databaseProvider.setGoal(uid, goal);
       Navigator.pop(context);
       await databaseProvider.completeSetup(uid);
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     }
   }
 
@@ -110,11 +112,11 @@ class _SetupPageState extends State<SetupPage> {
       milesInputError = false;
     });
 
-    if (electric == null || electric < 0) {
+    if (electric == null || electric < 0 || electric > 100000) {
       setState(() {
         electricInputError = true;
       });
-    } else if (gas == null || gas < 0) {
+    } else if (gas == null || gas < 0 || gas > 100000) {
       setState(() {
         gasInputError = true;
       });
@@ -132,9 +134,11 @@ class _SetupPageState extends State<SetupPage> {
           uid, electric, units.convertToMetric(units.unitType.volume, gas));
       await databaseProvider.fillMileage(
           uid, units.convertToMetric(units.unitType.length, mileage));
-
       Navigator.pop(context);
-      emissions = computeEmissions(mileage, electric, gas);
+      emissions = computeEmissions(mileage, electric, gas, carType);
+      await databaseProvider.setAverage(uid, emissions / (31*24));
+      await databaseProvider.setCarType(uid, carType);
+      emissions = units.convertFromMetric(units.unitType.weight, emissions);
       setState(() {
         secondPage = true;
       });
@@ -161,14 +165,14 @@ class _SetupPageState extends State<SetupPage> {
                         MyButton(text: "Next", onTap: enterDataAndNextPage),
                     child: Column(children: [
                       NumberQuestion(
-                        controller: monthlyElectricController!,
+                        controller: monthlyElectricController,
                         title: "Electricity use this month",
                         trailing: "kWh",
                         error: electricInputError,
                       ),
                       const SizedBox(height: 30),
                       NumberQuestion(
-                        controller: monthlyGasController!,
+                        controller: monthlyGasController,
                         title: "Natural gas use this month",
                         trailing: units.unitType.volume,
                         error: gasInputError,
@@ -181,19 +185,45 @@ class _SetupPageState extends State<SetupPage> {
                         error: milesInputError,
                       ),
                       const SizedBox(height: 30),
+                      Center(
+                        child: FittedText(text: "Car Type", 
+                        style: Theme.of(context).textTheme.headlineMedium,)
+                      ),
+                      const SizedBox(height: 30,),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 30),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: MyDropDownMenu(
+                            options: const [
+                              DropdownMenuEntry(value: "Gas", label: "Gas"),
+                              DropdownMenuEntry(value: "Diesel", label: "Diesel"),
+                              DropdownMenuEntry(value: "Hybrid", label: "Hybrid"),
+                              DropdownMenuEntry(value: "Electric", label: "Electric"),
+                            ],
+                            initialSelection: carType,
+                            onChanged: (value) => carType = value,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30)
                     ]),
                   ));
   }
 
-  double computeEmissions(double mileage, double electric, double gas) {
+  double computeEmissions(double mileage, double electric, double gas, String gasType) {
     final units = Provider.of<UnitsProvider>(context, listen: false);
+    double factor = 0;
+    switch(gasType){
+      case "Gas": factor = 0.170;
+      case "Diesel": factor = 0.171;
+      case "Hybrid": factor = 0.068;
+      case "Electric": factor = 0.047;
+    }
     return units.roundDouble(
-        units.convertFromMetric(
-            units.unitType.weight,
-
-            units.convertToMetric(units.unitType.length, mileage) * 0.1430 +
-            electric * 0.4 +
-            units.convertToMetric(units.unitType.volume, gas) * 1.9),
+            units.convertToMetric(units.unitType.length, mileage) * factor +
+            electric * 0.475 +
+            units.convertToMetric(units.unitType.volume, gas) * 1.92,
         2);
   }
 
@@ -208,7 +238,17 @@ class _SetupPageState extends State<SetupPage> {
         ),
         body: SpaceBetweenScrollView(
             padding: const EdgeInsets.all(25),
-            footer: MyButton(text: "Complete", onTap: finishSetup),
+            footer: Column(
+              children: [
+                MyButton(text: "Back", onTap: () {
+                  setState(() {
+                    secondPage = false;
+                  });
+                }),
+                const SizedBox(height: 30,),
+                MyButton(text: "Complete", onTap: finishSetup),
+              ],
+            ),
             child: Column(
               children: [
                 FittedText(
@@ -218,12 +258,12 @@ class _SetupPageState extends State<SetupPage> {
                   height: 10,
                 ),
                 FittedText(
-                  text: "$emissions ${units.unitType.weight} / month",
+                  text: "$emissions ${units.unitType.weight} CO2 / month",
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 10,),
                 FittedText(
-                  text: "Average: $defaultEmissions",
+                  text: "Average: ${units.convertFromMetric(units.unitType.weight, defaultEmissions)}",
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 30),

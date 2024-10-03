@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class MyTextField extends StatefulWidget{
   final String? hintText;
@@ -15,7 +14,7 @@ class MyTextField extends StatefulWidget{
   const MyTextField({
     super.key,
     this.hintText,
-    required this.hideText,
+    this.hideText = false,
     required this.controller,
     this.error = false,
     this.errorMsg,

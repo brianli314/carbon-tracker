@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:tracker_app/components/loading_circle.dart';
 import 'package:tracker_app/pages/emission_page.dart';
+import 'package:tracker_app/pages/quiz_page.dart';
 import 'package:tracker_app/pages/settings_page.dart';
 import 'package:tracker_app/pages/setup_page.dart';
 import 'package:tracker_app/pages/stats_page.dart';
@@ -19,20 +18,23 @@ class _HomePageState extends State<HomePage> {
 
   late final databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
   late final listeningProvider = Provider.of<DatabaseProvider>(context);
-  bool _isLoading = true;
+  final bool _isLoading = true;
 
   int selectedIndex = 0;
 
   final List pages = [
     const StatsPage(),
     const EmissionPage(),
-    SettingsPage()
+    const QuizPage(),
+    SettingsPage(),
   ];
 
   final List<BottomNavigationBarItem> iconPages = const [
     BottomNavigationBarItem(icon: Icon(Icons.equalizer), label: "Stats"),
     BottomNavigationBarItem(icon: Icon(Icons.public), label: "Emissions"),
+    BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: "Fun Facts"),
     BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
+    
   ];
 
   final List setupPages = [const SetupPage(), SettingsPage(showLogout: false,)];
@@ -42,6 +44,7 @@ class _HomePageState extends State<HomePage> {
     BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings")
   ];
 
+  /*
   @override
   void initState(){
     super.initState();
@@ -52,25 +55,28 @@ class _HomePageState extends State<HomePage> {
   }
 
   void loadSetup() async {
-    await databaseProvider.loadSetup(FirebaseAuth.instance.currentUser!.uid);
+    await databaseProvider.loadData(FirebaseAuth.instance.currentUser!.uid);
   }
+  */
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading ? const LoadingCircle() :
+    return 
     Scaffold(
-      body: listeningProvider.setupFinished ? pages[selectedIndex] : setupPages[selectedIndex],
+      body: pages[selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         currentIndex: selectedIndex,
+        unselectedItemColor: Theme.of(context).colorScheme.secondaryContainer,
+        
         onTap: (int index) => {
           setState(() {
             selectedIndex = index;
           })
         },
         selectedItemColor: Theme.of(context).colorScheme.inversePrimary,
-        items: listeningProvider.setupFinished ? iconPages : iconSetup,
+        items: iconPages,
       ),
     );
   }

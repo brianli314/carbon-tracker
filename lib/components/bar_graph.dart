@@ -39,7 +39,7 @@ class MyBarGraph extends StatelessWidget {
     barData.initBarData();
 
     return BarChart(BarChartData(
-      maxY: values.reduce(max),
+      maxY: max(values.reduce(max), 0.001),
       minY: 0,
       gridData: const FlGridData(show: false),
       borderData: FlBorderData(show: false),
@@ -51,7 +51,7 @@ class MyBarGraph extends StatelessWidget {
               const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: AxisTitles(
               sideTitles: SideTitles(
-                interval: values.reduce(max)/2,
+                interval: max(values.reduce(max)/2, 0.001),
                 reservedSize: 40,
             showTitles: true,
             getTitlesWidget: (value, meta) => SideTitleWidget(

@@ -1,9 +1,7 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:tracker_app/components/buttons.dart';
 import 'package:tracker_app/components/drop_down.dart';
 import 'package:tracker_app/components/fitted_text.dart';
 import 'package:tracker_app/components/space_scroll.dart';
-import 'package:tracker_app/services/database_provider.dart';
 import 'package:tracker_app/services/firestore.dart';
 import 'package:tracker_app/themes.dart';
 import 'package:tracker_app/units.dart';
@@ -155,9 +153,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       options: const [
                         DropdownMenuEntry(
-                            value: UnitType.imperial, label: "Imperial"),
+                            value: UnitType.imperial, label: "Miles"),
                         DropdownMenuEntry(
-                            value: UnitType.metric, label: "Metric"),
+                            value: UnitType.metric, label: "Kilometers"),
                       ])),
               const SizedBox(
                 height: 30,

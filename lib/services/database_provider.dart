@@ -24,15 +24,19 @@ class DatabaseProvider extends ChangeNotifier {
 
 
   Future<void> loadData(String uid) async {
-    _carbon = (await _db.getUserCarbon(uid))!;
-    _miles = (await _db.getUserMiles(uid))!;
-    _energy = (await _db.getUserEnergy(uid))!;
-    _setupFinished = (await _db.getSetup(uid))!;
-    notifyListeners();
-  }
-
-  Future<void> loadSetup(String uid) async {
-    _setupFinished = (await _db.getSetup(uid)) ?? false;
+    Carbon? loadCarbon = (await _db.getUserCarbon(uid));
+    Miles? loadMiles = (await _db.getUserMiles(uid));
+    Energy? loadEnergy = (await _db.getUserEnergy(uid));
+    bool? loadSetup = (await _db.getSetup(uid));
+    if (loadCarbon == null || loadMiles == null || loadEnergy == null || loadSetup == null){
+      Future.delayed(const Duration(seconds: 5));
+      loadData(uid);
+    } else {
+      _carbon = loadCarbon;
+      _miles = loadMiles;
+      _energy = loadEnergy;
+      _setupFinished = loadSetup;
+    }
     notifyListeners();
   }
 
@@ -51,8 +55,19 @@ class DatabaseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setCarType(String uid, String type) async {
+    miles.carType = type;
+    await _db.updateValue("Mileage", uid, miles.toMap());
+  }
+
   Future<void> setGoal(String uid, double goal) async {
     carbon.goal = goal;
+    await _db.updateValue("Carbon", uid, carbon.toMap());
+    notifyListeners();
+  }
+
+  Future<void> setAverage(String uid, double average) async {
+    carbon.average = average;
     await _db.updateValue("Carbon", uid, carbon.toMap());
     notifyListeners();
   }
@@ -81,9 +96,61 @@ class DatabaseProvider extends ChangeNotifier {
   }
 
   Future<void> addMileage(String uid, double mileage, String type) async {
-    miles.data.add(mileage);
-    miles.type.add(type);
-    miles.time.add(Timestamp.now());
+    DateTime now = DateTime.now();
+    Timestamp nowTime = Timestamp.now();
+    List<int> indexes = getIndexes(now, type);
+    if (indexes.length > 1){
+      print("Error: Multiple trips on the same day");
+    }
+    if (indexes.isNotEmpty){
+      miles.data[indexes.first] += mileage;
+      miles.time[indexes.first] = nowTime;
+    } else {
+      miles.data.add(mileage);
+      miles.type.add(type);
+      miles.time.add(nowTime);
+    }
+    
+    await _db.updateValue("Mileage", uid, miles.toMap());
+    notifyListeners();
+  }
+
+  List<int> getIndexes(DateTime date, String type){
+    List<int> indexes =
+        miles.time
+        .where((time) => sameDay(date, time.toDate()))
+        .map((time) => miles.time.indexOf(time))
+        .where((idx) => miles.type[idx] == type)
+        .toList();
+    if (indexes.length > 1){
+        print("Error: Multiple trips on the same day");
+    }
+    return indexes;
+  }
+
+  bool sameDay(DateTime day, DateTime other){
+    return day.year == other.year && day.month == other.month && day.day == other.day;
+  }
+
+  double getMileageFromDate(DateTime day, String type){
+    List<int> indexes = getIndexes(day, type);
+    if(indexes.isNotEmpty){
+      return miles.data[indexes.first];
+    } else {
+      return 0.0;
+    }
+  }
+
+  Future<void> setMileageFromDate(DateTime day, String type, double mileage, String uid) async {
+    Timestamp nowTime = Timestamp.now();
+    List<int> indexes = getIndexes(day, type);
+    if(indexes.isNotEmpty){
+      miles.data[indexes.first] = mileage;
+    } else {
+      miles.data.add(mileage);
+      miles.type.add(type);
+      miles.time.add(nowTime);
+    }
     await _db.updateValue("Mileage", uid, miles.toMap());
     notifyListeners();
   }

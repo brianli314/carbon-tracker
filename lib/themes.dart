@@ -15,7 +15,7 @@ TextTheme textTheme = TextTheme(
         fontSize: 16,
       ),
       labelMedium: GoogleFonts.nunito(
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: FontWeight.bold
       ),
       labelSmall: GoogleFonts.nunito(
