@@ -44,7 +44,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.sizeOf(context).width);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
