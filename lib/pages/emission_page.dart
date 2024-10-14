@@ -67,7 +67,7 @@ class _EmissionPageState extends State<EmissionPage>
         : Scaffold(
             appBar: AppBar(
               title: FittedText(
-                  text: "E M M I S S I O N S",
+                  text: "E M I S S I O N S",
                   style: Theme.of(context).textTheme.headlineLarge),
               centerTitle: true,
               bottom: TabBar(
