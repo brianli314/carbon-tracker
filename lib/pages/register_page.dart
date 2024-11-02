@@ -60,8 +60,8 @@ class _RegisterPageState extends State<RegisterPage> {
     } else {
       try {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: emailController.text, 
-            password: passwordController.text);
+            email: emailController.text.trim(), 
+            password: passwordController.text.trim());
 
         if (context.mounted) Navigator.pop(context);
 

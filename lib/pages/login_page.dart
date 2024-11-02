@@ -55,8 +55,8 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, 
-          password: passwordController.text);
+          email: emailController.text.trim(), 
+          password: passwordController.text.trim());
         if (mounted) Navigator.pop(context);
       } on FirebaseAuthException catch(e){
         if (e.code == "invalid-credential" || e.code == "INVALID_LOGIN_CREDENTIALS"){
