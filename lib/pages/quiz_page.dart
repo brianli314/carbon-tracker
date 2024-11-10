@@ -23,7 +23,14 @@ class _QuizPageState extends State<QuizPage> {
     "Producing one kilogram of beef can generate up to 60 kilograms of CO2 equivalents, making it one of the most carbon-intensive foods.",
     "Recycling aluminum saves 95% of the energy required to produce it from raw materials, significantly reducing carbon emissions.",
     "Electric cars produce fewer emissions over their lifetime compared to gas-powered cars, even when considering the energy used for battery production.",
-    "Carbon dioxide can remain in the atmosphere for up to 1,000 years, contributing to long-term climate change."
+    "Carbon dioxide can remain in the atmosphere for up to 1,000 years, contributing to long-term climate change.",
+    "The link between CO₂ and rising temperatures was first theorized in the 1800s by scientist Eunice Newton Foote, but it took over a century for people to recognize its full impact.",
+    "Atmospheric carbon dioxide levels are higher than they’ve been in at least 800,000 years, mainly due to fossil fuel emissions since the Industrial Revolution.",
+    "Oceans absorb about 25-30% of human-made carbon emissions. Without this buffer, the effects of global warming would be even more extreme!",
+    "What used to be a once-in-a-decade heatwave could occur about every other year by 2050 if emissions continue to rise.",
+    "The Arctic is warming nearly four times faster than the global average, leading to faster ice melt, sea-level rise, and drastic impacts on ecosystems and human communities.",
+    "Warming temperatures and altered rainfall patterns allow disease-carrying mosquitoes to inhabit new areas, potentially increasing the spread of diseases like malaria and dengue fever.",
+    "The rate at which sea levels are rising has doubled in the last 30 years, endangering coastal cities and habitats globally.",
 ];
   int index = 0;
 
@@ -61,7 +68,7 @@ class _QuizPageState extends State<QuizPage> {
     return Scaffold(
       appBar: AppBar(
         title: FittedText(
-            text: "Fun Facts",
+            text: "F U N   F A C T S",
             style: Theme.of(context).textTheme.headlineLarge),
         centerTitle: true,
       ),
